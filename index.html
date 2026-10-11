@@ -730,5 +730,31 @@ fetch('/api/stats',{headers:{'Accept':'application/json'}}).then(r=>{if(!r.ok)th
  statsRoot.innerHTML='<div class="stats-empty"><span>🌙</span><strong>El panel de Nekora está listo.</strong><small>Las cifras reales aparecerán aquí cuando el bot envíe sus estadísticas al servicio de la web.</small></div>';
 });
 </script>
+<script>
+async function cargarEstadisticasNekora() {
+    try {
+        // Tu URL de Codespaces con la ruta /api/stats
+        const urlCodespace = 'https://github.dev'; 
+
+        const respuesta = await fetch(urlCodespace);
+        const data = await respuesta.json();
+
+        // Vincula los datos con los IDs que pusiste arriba
+        document.getElementById('servidores-count').innerText = data.servidores.toLocaleString();
+        document.getElementById('usuarios-count').innerText = data.usuarios.toLocaleString();
+        document.getElementById('bot-estado').innerText = data.estado || "Online 🟢";
+        
+        console.log("Datos cargados:", data);
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        document.getElementById('servidores-count').innerText = "0";
+        document.getElementById('usuarios-count').innerText = "0";
+        document.getElementById('bot-estado').innerText = "Offline 🔴";
+    }
+}
+
+// Llama a la función automáticamente al cargar la página
+window.onload = cargarEstadisticasNekora;
+</script>
 </body>
 </html>
