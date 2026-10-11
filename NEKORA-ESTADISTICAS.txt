@@ -1,0 +1,22 @@
+NEKORA — CONEXIÓN DE ESTADÍSTICAS EN VIVO
+
+La página consulta /api/stats. La función de Vercel reenvía la consulta a la URL guardada en la variable de entorno NEKORA_STATS_URL.
+
+La fuente de estadísticas debe responder JSON con esta forma:
+{
+  "online": true,
+  "latencyMs": 42,
+  "totalUsers": 12500,
+  "totalGuilds": 230,
+  "updatedAt": "2026-10-11T12:00:00.000Z",
+  "topServers": [
+    { "name": "Nombre del servidor", "memberCount": 1800, "iconUrl": "https://ejemplo.com/icon.png" }
+  ]
+}
+
+Añade NEKORA_STATS_URL en Vercel → Project → Settings → Environment Variables y vuelve a desplegar. Esa URL debe pertenecer al servicio que ya conoce los datos reales del bot. No pongas el token de Discord en el HTML ni en el navegador.
+
+Los valores son solo un ejemplo de estructura, no son estadísticas reales de Nekora. La página no inventa cifras si no recibe datos.
+
+IMÁGENES
+Coloca las imágenes que ya usas en la carpeta img/ con los nombres nekora.png y cristian.png.
