@@ -349,6 +349,26 @@ footer{border-top-color:rgba(244,168,202,.19)}
   </div>
 </div>
 <div class="topline"></div>
+  <div class="wrap">
+  <div class="trustbar">
+    <div class="trust">
+      <b id="servidores-count">Cargando...</b>
+      Servidores Activos
+    </div>
+    <div class="trust">
+      <b id="usuarios-count">Cargando...</b>
+      Usuarios Totales
+    </div>
+    <div class="trustbar">
+      <b>99.9%</b>
+      Uptime
+    </div>
+    <div class="trust">
+      <b id="bot-estado">Conectando...</b>
+      Estado del Bot
+    </div>
+  </div>
+</div>
 <header>
   <div class="wrap nav">
     <a class="brand" href="#inicio" aria-label="Nekora inicio"><span class="brand-mark"><img src="img/nekora.png" alt="Nekora" class="tiny-nekora"></span><span>NEKORA<small>tu neko de confianza</small></span></a>
@@ -734,7 +754,7 @@ fetch('/api/stats',{headers:{'Accept':'application/json'}}).then(r=>{if(!r.ok)th
 async function cargarEstadisticasNekora() {
     try {
         // Tu URL de Codespaces con la ruta /api/stats
-        const urlCodespace = 'https://github.dev'; 
+        const urlCodespace = 'https://curly-rotary-phone-96qp66qr47rw3pj49-8080.app.github.dev/api/stats'; 
 
         const respuesta = await fetch(urlCodespace);
         const data = await respuesta.json();
