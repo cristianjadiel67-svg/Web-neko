@@ -349,26 +349,6 @@ footer{border-top-color:rgba(244,168,202,.19)}
   </div>
 </div>
 <div class="topline"></div>
-  <div class="wrap">
-  <div class="trustbar">
-    <div class="trust">
-      <b id="servidores-count">Cargando...</b>
-      Servidores Activos
-    </div>
-    <div class="trust">
-      <b id="usuarios-count">Cargando...</b>
-      Usuarios Totales
-    </div>
-    <div class="trustbar">
-      <b>99.9%</b>
-      Uptime
-    </div>
-    <div class="trust">
-      <b id="bot-estado">Conectando...</b>
-      Estado del Bot
-    </div>
-  </div>
-</div>
 <header>
   <div class="wrap nav">
     <a class="brand" href="#inicio" aria-label="Nekora inicio"><span class="brand-mark"><img src="img/nekora.png" alt="Nekora" class="tiny-nekora"></span><span>NEKORA<small>tu neko de confianza</small></span></a>
@@ -724,57 +704,50 @@ document.querySelectorAll('[data-link]').forEach(a=>{
     }
   }
 });
-
-// Estadísticas en vivo: el endpoint /api/stats debe devolver JSON del bot.
-const fmtNumber = n => Number.isFinite(Number(n)) ? new Intl.NumberFormat('es-ES').format(Number(n)) : '—';
-const statsRoot = document.getElementById('serverLeaderboard');
-function renderServerStats(data){
-  const latency = Number(data.latencyMs ?? data.latency);
-  document.getElementById('botLatency').textContent = Number.isFinite(latency) ? `${Math.round(latency)} ms` : '—';
-  document.getElementById('latencyState').textContent = data.online === false ? 'Bot desconectado' : (Number.isFinite(latency) ? 'Conexión con el bot' : 'Latencia no disponible');
-  document.getElementById('botUsers').textContent = fmtNumber(data.totalUsers ?? data.users);
-  document.getElementById('botGuilds').textContent = fmtNumber(data.totalGuilds ?? data.guildCount ?? (Array.isArray(data.servers) ? data.servers.length : NaN));
-  const servers = Array.isArray(data.topServers) ? data.topServers : (Array.isArray(data.servers) ? data.servers : []);
-  const top = servers.slice().sort((a,b)=>(Number(b.memberCount ?? b.members)||0)-(Number(a.memberCount ?? a.members)||0)).slice(0,5);
-  if(!top.length){statsRoot.innerHTML='<div class="stats-empty"><span>🌸</span><strong>Las estadísticas están conectadas, pero el ranking aún no tiene datos.</strong><small>Cuando el bot publique los servidores y sus miembros, aparecerán aquí.</small></div>';return;}
-  statsRoot.innerHTML = top.map((server,i)=>{
-    const name = String(server.name || `Servidor ${i+1}`).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    const count = fmtNumber(server.memberCount ?? server.members);
-    const icon = server.iconUrl && /^https:\/\//i.test(server.iconUrl) ? `<img src="${server.iconUrl}" alt="" loading="lazy">` : `<span>${i+1}</span>`;
-    return `<div class="server-row"><div class="server-rank">${icon}</div><div class="server-name"><strong>${name}</strong><small>Comunidad de Nekora</small></div><div class="server-members"><strong>${count}</strong><small>miembros</small></div></div>`;
-  }).join('');
-  if(data.updatedAt){const d=new Date(data.updatedAt);if(!Number.isNaN(d.getTime()))document.getElementById('statsUpdated').textContent=`Actualizado: ${d.toLocaleString('es-ES')}`;}
-}
-fetch('/api/stats',{headers:{'Accept':'application/json'}}).then(r=>{if(!r.ok)throw new Error('stats unavailable');return r.json();}).then(renderServerStats).catch(()=>{
- document.getElementById('latencyState').textContent='Sin conexión de estadísticas';
- statsRoot.innerHTML='<div class="stats-empty"><span>🌙</span><strong>El panel de Nekora está listo.</strong><small>Las cifras reales aparecerán aquí cuando el bot envíe sus estadísticas al servicio de la web.</small></div>';
-});
-</script>
 <script>
 async function cargarEstadisticasNekora() {
     try {
-        // Tu URL de Codespaces con la ruta /api/stats
-        const urlCodespace = 'https://curly-rotary-phone-96qp66qr47rw3pj49-8080.app.github.dev/api/stats'; 
+        // Enlace al puerto 8080 de tu Flask en Codespaces
+        const urlCodespace = '<https://curly-rotary-phone-96qp66qr47rw3pj49-8080.app.github.dev/api/stats>
+async function cargarEstadisticasNekora() {
+    try {
+        // Enlace al puerto 8080 de tu Flask en Codespaces
+        const urlCodespace = 'https://github.dev'; 
 
         const respuesta = await fetch(urlCodespace);
         const data = await respuesta.json();
 
-        // Vincula los datos con los IDs que pusiste arriba
-        document.getElementById('servidores-count').innerText = data.servidores.toLocaleString();
-        document.getElementById('usuarios-count').innerText = data.usuarios.toLocaleString();
-        document.getElementById('bot-estado').innerText = data.estado || "Online 🟢";
+        // Buscamos todas las etiquetas h3, div o p de tu página
+        const elementos = document.querySelectorAll('body *');
+
+        elementos.forEach(el => {
+            // Conector para el cuadro de Servidores
+            if (el.innerText === "Comunidades con Nekora" || el.innerText === "Comunidades activas con Nekora") {
+                let numeroContainer = el.parentElement.querySelector('h1, h2, h3, div, span, b');
+                if (numeroContainer) numeroContainer.innerText = data.servidores.toLocaleString();
+            }
+            // Conector para el cuadro de Usuarios
+            if (el.innerText === "Miembros sumados en las comunidades") {
+                let numeroContainer = el.parentElement.querySelector('h1, h2, h3, div, span, b');
+                if (numeroContainer) numeroContainer.innerText = data.usuarios.toLocaleString();
+            }
+            // Conector para el cuadro de Latencia
+            if (el.innerText === "Sin conexión de estadísticas" || el.innerText === "Estado de conexión del servicio") {
+                let numeroContainer = el.parentElement.querySelector('h1, h2, h3, div, span, b');
+                if (numeroContainer) {
+                    numeroContainer.innerText = data.ping ? data.ping + " ms" : "Conectado 🟢";
+                }
+            }
+        });
         
-        console.log("Datos cargados:", data);
     } catch (error) {
-        console.error("Error de conexión:", error);
-        document.getElementById('servidores-count').innerText = "0";
-        document.getElementById('usuarios-count').innerText = "0";
-        document.getElementById('bot-estado').innerText = "Offline 🔴";
+        console.error("Error al conectar con la API de Nekora:", error);
     }
 }
 
-// Llama a la función automáticamente al cargar la página
+// Ejecutar la carga inmediatamente al abrir la web
 window.onload = cargarEstadisticasNekora;
+</script>
 </script>
 </body>
 </html>
